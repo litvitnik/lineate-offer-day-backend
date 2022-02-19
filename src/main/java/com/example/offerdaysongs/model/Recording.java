@@ -26,4 +26,7 @@ public class Recording {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id", insertable = false, updatable = false)
     Singer singer;
+
+    @OneToMany(mappedBy = "recording")
+    List<Copyright> copyrights;
 }
