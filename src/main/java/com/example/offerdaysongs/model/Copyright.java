@@ -1,12 +1,17 @@
 package com.example.offerdaysongs.model;
 
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 public class Copyright {
     @Id
@@ -21,9 +26,24 @@ public class Copyright {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
+    @ToString.Exclude
     Company company;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recording_id", insertable = false, updatable = false)
+    @ToString.Exclude
     Recording recording;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Copyright copyright = (Copyright) o;
+        return id != null && Objects.equals(id, copyright.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

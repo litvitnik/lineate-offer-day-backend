@@ -1,16 +1,14 @@
-package com.example.offerdaysongs.dto;
+package com.example.offerdaysongs.dto.requests;
 
 import com.example.offerdaysongs.model.Company;
 import com.example.offerdaysongs.model.Recording;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 @Data
-@AllArgsConstructor
-public class CopyrightDto {
-    Long id;
+public class CreateCopyrightRequest {
     ZonedDateTime begins;
     ZonedDateTime expires;
     BigDecimal fee;

@@ -35,10 +35,10 @@ public class RecordingService {
         recording.setTitle(request.getTitle());
         recording.setVersion(request.getVersion());
         recording.setReleaseTime(request.getReleaseTime());
-        var singerDto = request.getSinger();
+        Singer singerDto = request.getSinger();
         if (singerDto != null) {
-            var singer = singerRepository.findById(singerDto.getId()).orElseGet(() -> {
-                var temp = new Singer();
+            Singer singer = singerRepository.findById(singerDto.getId()).orElseGet(() -> {
+                Singer temp = new Singer();
                 temp.setName(singerDto.getName());
                 return singerRepository.save(temp);
             });

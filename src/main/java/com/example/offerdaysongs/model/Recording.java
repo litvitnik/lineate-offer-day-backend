@@ -1,20 +1,17 @@
 package com.example.offerdaysongs.model;
 
-import liquibase.pro.packaged.E;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 public class Recording {
     @Id
@@ -25,8 +22,23 @@ public class Recording {
     ZonedDateTime releaseTime;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id", insertable = false, updatable = false)
+    @ToString.Exclude
     Singer singer;
 
     @OneToMany(mappedBy = "recording")
+    @ToString.Exclude
     List<Copyright> copyrights;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Recording recording = (Recording) o;
+        return id != null && Objects.equals(id, recording.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
