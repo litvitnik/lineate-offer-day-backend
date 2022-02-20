@@ -3,6 +3,8 @@ package com.example.offerdaysongs.controller;
 import com.example.offerdaysongs.dto.RecordingDto;
 import com.example.offerdaysongs.dto.SingerDto;
 import com.example.offerdaysongs.dto.requests.CreateRecordingRequest;
+import com.example.offerdaysongs.exceptions.RecordingNotFoundException;
+import com.example.offerdaysongs.model.Copyright;
 import com.example.offerdaysongs.model.Recording;
 import com.example.offerdaysongs.model.Singer;
 import com.example.offerdaysongs.service.RecordingService;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +45,15 @@ public class RecordingController {
     @PostMapping("/")
     public RecordingDto create(@RequestBody CreateRecordingRequest request) {
         return convertToDto(recordingService.create(request));
+    }
+
+    @GetMapping("/{id}/fee")
+    public BigDecimal getFeeSum(@PathVariable Long id){
+        return recordingService.getById(id).getCopyrights()
+                .stream()
+                .map(Copyright::getFee)
+                .reduce(BigDecimal::add)
+                .orElseThrow(RecordingNotFoundException::new);
     }
 
     private RecordingDto convertToDto(Recording recording)
