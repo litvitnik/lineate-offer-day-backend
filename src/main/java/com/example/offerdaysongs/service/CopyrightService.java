@@ -72,13 +72,19 @@ public class CopyrightService {
     public void update(CreateCopyrightRequest editedCopyright, long id) {
         Copyright oldCopyRight = copyrightRepository.findById(id).orElseThrow(CopyrightNotFoundException::new);
         oldCopyRight.setId(id);
+        oldCopyRight.setBegins(editedCopyright.getBegins());
+        oldCopyRight.setExpires(editedCopyright.getExpires());
+        oldCopyRight.setRecording(editedCopyright.getRecording());
+        oldCopyRight.setCompany(editedCopyright.getCompany());
+        oldCopyRight.setFee(editedCopyright.getFee());
         copyrightRepository.save(oldCopyRight);
     }
 
     public List<Copyright> getAllByCompanyId(long id) {
         return copyrightRepository.findAllByCompanyId(id);
     }
-    public Copyright getCopyrightByPeriod(ZonedDateTime begins, ZonedDateTime expires) {
-        return copyrightRepository.findCopyrightByBeginsAndExpires(begins, expires).orElseThrow(CopyrightNotFoundException::new);
+
+    public List<Copyright> getCopyrightsByPeriod(ZonedDateTime begins, ZonedDateTime expires) {
+        return copyrightRepository.findAllCopyrightsByBeginsAndExpires(begins, expires);
     }
 }

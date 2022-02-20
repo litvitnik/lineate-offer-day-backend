@@ -2,9 +2,9 @@ package com.example.offerdaysongs.controller;
 
 import com.example.offerdaysongs.dto.CopyrightDto;
 import com.example.offerdaysongs.dto.requests.CreateCopyrightRequest;
-import com.example.offerdaysongs.exceptions.CopyrightNotFoundException;
 import com.example.offerdaysongs.model.Copyright;
 import com.example.offerdaysongs.service.CopyrightService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
@@ -45,15 +45,15 @@ public class CopyrightController {
         copyrightService.update(request, id);
     }
 
-    @GetMapping("/{companyId:[\\d]+}")
+    @GetMapping("/company/{companyId:[\\d]+}")
     public List<CopyrightDto> getAllByCompanyId(@PathVariable("companyId") Long id){
         return copyrightService.getAllByCompanyId(id).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     @GetMapping("/period")
-    public Copyright getCopyrightByPeriod(@RequestParam ZonedDateTime begins, @RequestParam ZonedDateTime expires){
-        return copyrightService.getCopyrightByPeriod(begins, expires);
+    public List<Copyright> getCopyrightByPeriod(@RequestParam("begins") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime begins, @RequestParam("expires") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime expires){
+        return copyrightService.getCopyrightsByPeriod(begins, expires);
     }
 
     private CopyrightDto convertToDto(Copyright copyright){

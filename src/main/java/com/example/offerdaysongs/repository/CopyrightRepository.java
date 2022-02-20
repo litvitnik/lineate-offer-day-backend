@@ -10,5 +10,5 @@ import java.util.Optional;
 
 public interface CopyrightRepository extends JpaRepository<Copyright, Long>, JpaSpecificationExecutor<Copyright> {
     List<Copyright> findAllByCompanyId(long id);
-    Optional<Copyright> findCopyrightByBeginsAndExpires(ZonedDateTime begins, ZonedDateTime expires);
+    List<Copyright> findAllCopyrightsByBeginsAndExpires(ZonedDateTime begins, ZonedDateTime expires);
 }
