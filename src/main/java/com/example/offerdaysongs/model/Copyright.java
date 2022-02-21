@@ -24,12 +24,12 @@ public class Copyright {
 
     BigDecimal fee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
     @ToString.Exclude
     Company company;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recording_id", insertable = false, updatable = false)
     @ToString.Exclude
     Recording recording;

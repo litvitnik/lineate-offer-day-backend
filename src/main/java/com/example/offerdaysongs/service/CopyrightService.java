@@ -1,7 +1,9 @@
 package com.example.offerdaysongs.service;
 
 import com.example.offerdaysongs.dto.requests.CreateCopyrightRequest;
+import com.example.offerdaysongs.exceptions.CompanyNotFoundException;
 import com.example.offerdaysongs.exceptions.CopyrightNotFoundException;
+import com.example.offerdaysongs.exceptions.RecordingNotFoundException;
 import com.example.offerdaysongs.model.Company;
 import com.example.offerdaysongs.model.Copyright;
 import com.example.offerdaysongs.model.Recording;
@@ -45,24 +47,13 @@ public class CopyrightService {
 
         Recording recordingDto = request.getRecording();
         if(recordingDto != null){
-            Recording recording = recordingRepository.findById(recordingDto.getId()).orElseGet(() -> {
-                Recording temp = new Recording();
-                temp.setSinger(recordingDto.getSinger());
-                temp.setReleaseTime(recordingDto.getReleaseTime());
-                temp.setTitle(recordingDto.getTitle());
-                temp.setReleaseTime(recordingDto.getReleaseTime());
-                return recordingRepository.save(temp);
-            });
+            Recording recording = recordingRepository.findById(recordingDto.getId()).orElseThrow(RecordingNotFoundException::new);
             copyright.setRecording(recording);
         }
 
         Company companyDto = request.getCompany();
         if(companyDto != null){
-            Company company = companyRepository.findById(companyDto.getId()).orElseGet(() -> {
-                Company temp = new Company();
-                temp.setName(companyDto.getName());
-                return companyRepository.save(temp);
-            });
+            Company company = companyRepository.findById(companyDto.getId()).orElseThrow(CompanyNotFoundException::new);
             copyright.setCompany(company);
         }
 

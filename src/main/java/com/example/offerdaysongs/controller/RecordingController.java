@@ -39,6 +39,8 @@ public class RecordingController {
     @GetMapping("/{id:[\\d]+}")
     public RecordingDto get(@PathVariable(ID) long id) {
         Recording recording = recordingService.getById(id);
+        System.out.println("Copyrights!!!");
+        System.out.println(recording.getCopyrights());
         return convertToDto(recording);
     }
 

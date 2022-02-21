@@ -162,6 +162,9 @@ class OfferDaySongsApplicationTests {
 
         //Получение стоимости
         mockMvc
+                .perform(get(recordingsUri + "/1/"))
+                .andDo(print());
+        mockMvc
                 .perform(get(recordingsUri + "/1/fee/"))
                 .andDo(print());
         //Получение стоимости использования песни

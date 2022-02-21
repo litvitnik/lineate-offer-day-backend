@@ -5,6 +5,8 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,14 +22,14 @@ public class Recording {
     String title;
     String version;
     ZonedDateTime releaseTime;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id", insertable = false, updatable = false)
     @ToString.Exclude
     Singer singer;
 
-    @OneToMany(mappedBy = "recording")
+    @OneToMany(mappedBy = "recording", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ToString.Exclude
-    List<Copyright> copyrights;
+    Collection<Copyright> copyrights = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
