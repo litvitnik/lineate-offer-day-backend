@@ -1,5 +1,6 @@
 package com.example.offerdaysongs.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -22,13 +23,15 @@ public class Recording {
     String title;
     String version;
     ZonedDateTime releaseTime;
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id", insertable = false, updatable = false)
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "singer_id", insertable = false, updatable = false)
     @ToString.Exclude
     Singer singer;
 
-    @OneToMany(mappedBy = "recording", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "recording", fetch = FetchType.EAGER)
     @ToString.Exclude
+    @JsonIgnore
     Collection<Copyright> copyrights = new ArrayList<>();
 
     @Override

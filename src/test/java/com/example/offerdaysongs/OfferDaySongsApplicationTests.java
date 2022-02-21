@@ -8,9 +8,6 @@ import com.example.offerdaysongs.model.Company;
 import com.example.offerdaysongs.model.Recording;
 import com.example.offerdaysongs.model.Singer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.type.TimestampType;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,23 +15,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.MultiValueMap;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
 
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -55,7 +48,7 @@ class OfferDaySongsApplicationTests {
     }
 
     @Test
-    public void createSinger() throws Exception{
+    public void singerIntegrationTest() throws Exception{
         CreateSingerRequest singerRequest = new CreateSingerRequest();
         singerRequest.setName("Feduk");
         mockMvc
@@ -69,7 +62,7 @@ class OfferDaySongsApplicationTests {
     }
 
     @Test
-    public void createCompany() throws Exception{
+    public void companyIntegrationTest() throws Exception{
         CreateCompanyRequest companyRequest = new CreateCompanyRequest();
         companyRequest.setName("IBM");
         mockMvc
@@ -83,7 +76,7 @@ class OfferDaySongsApplicationTests {
     }
 
     @Test
-    public void createRecordingWhenSingerExists() throws Exception{
+    public void recordingIntegrationTest() throws Exception{
         CreateRecordingRequest recordingRequest = new CreateRecordingRequest();
         recordingRequest.setTitle("TestSongName");
         Singer fakeSinger = new Singer();
@@ -97,31 +90,30 @@ class OfferDaySongsApplicationTests {
         mockMvc
                 .perform(get(recordingsUri + "/5"))
                 .andExpect(content().json("{\"title\":\"TestSongName\"}"));
-    }
-
-    @Test
-    public void createRecordingWhenSingerIsAbsent() throws Exception{
-        CreateRecordingRequest recordingRequest = new CreateRecordingRequest();
-        recordingRequest.setTitle("TestSongName");
-        Singer fakeSinger = new Singer();
-        fakeSinger.setId(5L);
-        fakeSinger.setName("Abuba");
-        recordingRequest.setSinger(fakeSinger);
+        CreateRecordingRequest recordingRequest2 = new CreateRecordingRequest();
+        recordingRequest2.setTitle("TestSongName2");
+        Singer fakeSinger2 = new Singer();
+        fakeSinger2.setId(5L);
+        fakeSinger2.setName("Abuba");
+        recordingRequest2.setSinger(fakeSinger2);
         mockMvc
-                .perform(post(recordingsUri).content(asJsonString(recordingRequest))
+                .perform(post(recordingsUri).content(asJsonString(recordingRequest2))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         mockMvc
-                .perform(get(recordingsUri + "/5"))
-                .andExpect(content().json("{\"title\":\"TestSongName\"}"));
+                .perform(get(recordingsUri + "/6"))
+                .andExpect(content().json("{\"title\":\"TestSongName2\"}"));
+
         mockMvc
-                .perform(get(singersUri + "/5"))
-                .andExpect(content().json("{\"name\":\"Abuba\"}"));
+                .perform(get(singersUri))
+                .andDo(print())
+                .andExpect(jsonPath("$[*].name").value(hasItem("Abuba")));
     }
 
+
     @Test
-    public void copyrightIntegrational() throws Exception{
+    public void copyrightIntegrationTest() throws Exception{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssVV");
         ZonedDateTime begins = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC);
         String beginsString =  ZonedDateTime.ofInstant(begins.toInstant(), ZoneOffset.UTC).format(formatter).trim();
@@ -137,37 +129,40 @@ class OfferDaySongsApplicationTests {
         copyrightRequest.setRecording(recording);
         copyrightRequest.setBegins(begins);
         copyrightRequest.setExpires(expires);
+
         mockMvc
                 .perform(post(copyrightsUri).content(asJsonString(copyrightRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
         mockMvc
                 .perform(post(copyrightsUri).content(asJsonString(copyrightRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        //Проверка на корректную дату в создании
+
         mockMvc
                 .perform(get(copyrightsUri + "/1"))
                 .andExpect(content().json("{\"begins\":\"" + beginsString + "\"}"))
                 .andExpect(content().json("{\"expires\":\"" + expiresString + "\"}"));
-        //Поиск по периоду
-        //TODO проверочку сюда
+
         mockMvc
                 .perform(get(copyrightsUri + "period/")
                         .param("begins", beginsString)
                         .param("expires", expiresString))
-                .andDo(print());
+                .andExpect(jsonPath("$[0].id", is(1)))
+                .andExpect(jsonPath("$[1].id", is(2)));
 
         //Получение стоимости
         mockMvc
-                .perform(get(recordingsUri + "/1/"))
-                .andDo(print());
-        mockMvc
                 .perform(get(recordingsUri + "/1/fee/"))
-                .andDo(print());
-        //Получение стоимости использования песни
+                .andExpect(content().string("20"));
+
+        mockMvc
+                .perform(get(recordingsUri + "/2/fee/"))
+                .andExpect(content().string("0"));
+
     }
 
 

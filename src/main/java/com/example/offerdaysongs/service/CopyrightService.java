@@ -46,14 +46,17 @@ public class CopyrightService {
         copyright.setFee(request.getFee());
 
         Recording recordingDto = request.getRecording();
+
         if(recordingDto != null){
             Recording recording = recordingRepository.findById(recordingDto.getId()).orElseThrow(RecordingNotFoundException::new);
+            recording.getCopyrights().add(copyright);
             copyright.setRecording(recording);
         }
 
         Company companyDto = request.getCompany();
         if(companyDto != null){
             Company company = companyRepository.findById(companyDto.getId()).orElseThrow(CompanyNotFoundException::new);
+            company.getCopyrights().add(copyright);
             copyright.setCompany(company);
         }
 

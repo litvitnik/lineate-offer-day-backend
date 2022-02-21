@@ -1,9 +1,12 @@
 package com.example.offerdaysongs.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +22,8 @@ public class Company {
     String name;
     @OneToMany(mappedBy = "company")
     @ToString.Exclude
-    List<Copyright> copyrights;
+    @JsonIgnore
+    Collection<Copyright> copyrights = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

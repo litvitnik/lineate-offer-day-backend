@@ -8,12 +8,14 @@ import com.example.offerdaysongs.model.Copyright;
 import com.example.offerdaysongs.model.Recording;
 import com.example.offerdaysongs.model.Singer;
 import com.example.offerdaysongs.service.RecordingService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -39,8 +41,6 @@ public class RecordingController {
     @GetMapping("/{id:[\\d]+}")
     public RecordingDto get(@PathVariable(ID) long id) {
         Recording recording = recordingService.getById(id);
-        System.out.println("Copyrights!!!");
-        System.out.println(recording.getCopyrights());
         return convertToDto(recording);
     }
 
@@ -55,7 +55,7 @@ public class RecordingController {
                 .stream()
                 .map(Copyright::getFee)
                 .reduce(BigDecimal::add)
-                .orElseThrow(RecordingNotFoundException::new);
+                .orElse(BigDecimal.ZERO);
     }
 
     private RecordingDto convertToDto(Recording recording)

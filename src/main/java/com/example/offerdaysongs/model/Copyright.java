@@ -29,8 +29,8 @@ public class Copyright {
     @ToString.Exclude
     Company company;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "recording_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "recording_id", insertable = true, updatable = false)
     @ToString.Exclude
     Recording recording;
 
