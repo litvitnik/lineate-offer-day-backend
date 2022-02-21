@@ -1,7 +1,6 @@
 package com.example.offerdaysongs.service;
 
 import com.example.offerdaysongs.dto.requests.CreateRecordingRequest;
-import com.example.offerdaysongs.exceptions.RecordingNotFoundException;
 import com.example.offerdaysongs.model.Recording;
 import com.example.offerdaysongs.model.Singer;
 import com.example.offerdaysongs.repository.RecordingRepository;

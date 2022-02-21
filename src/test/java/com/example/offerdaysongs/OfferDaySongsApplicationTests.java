@@ -22,7 +22,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -117,7 +118,7 @@ class OfferDaySongsApplicationTests {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssVV");
         ZonedDateTime begins = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC);
         String beginsString =  ZonedDateTime.ofInstant(begins.toInstant(), ZoneOffset.UTC).format(formatter).trim();
-        ZonedDateTime expires = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC);
+        ZonedDateTime expires = ZonedDateTime.ofInstant(Instant.ofEpochSecond(1695469871), ZoneOffset.UTC);
         String expiresString =  ZonedDateTime.ofInstant(expires.toInstant(), ZoneOffset.UTC).format(formatter).trim();
         CreateCopyrightRequest copyrightRequest = new CreateCopyrightRequest();
         copyrightRequest.setFee(BigDecimal.TEN);
@@ -135,6 +136,15 @@ class OfferDaySongsApplicationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        mockMvc
+                .perform(post(copyrightsUri).content(asJsonString(copyrightRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        ZonedDateTime expiredAlready = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC);
+        copyrightRequest.setExpires(expiredAlready);
 
         mockMvc
                 .perform(post(copyrightsUri).content(asJsonString(copyrightRequest))
